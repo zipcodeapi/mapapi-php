@@ -18,10 +18,10 @@ class Redline13MapApi
 	private $curl = null;
 	
 	/** HTTP Protocol */
-	private $protocol = 'http';
+	private $protocol = 'https';
 	
 	/** API Host */
-	const API_HOST = 'localhost';
+	const API_HOST = 'realtimemapapi.redline13.com';
 	
 	/** API Port */
 	const API_PORT = 4434;
