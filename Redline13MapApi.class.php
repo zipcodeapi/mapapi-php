@@ -21,7 +21,7 @@ class Redline13MapApi
 	private $protocol = 'https';
 	
 	/** API Host */
-	const API_HOST = 'realtimemapapi.redline13.com';
+	const API_HOST = 'realtimemapapi.com';
 	
 	/** API Port */
 	const API_PORT = 4434;
