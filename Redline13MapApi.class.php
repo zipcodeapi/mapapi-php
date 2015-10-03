@@ -121,7 +121,7 @@ class Redline13MapApi
 				fwrite($this->serverUnixSocket, json_encode($point));
 				
 				// Check for response
-				if (feof($this->serverUnixSocket) || fgets($this->serverUnixSocket, 1024) !== 'OK')
+				if (feof($this->serverUnixSocket) || fgets($this->serverUnixSocket, 1024) !== "OK\n")
 					$rtn = false;
 			}
 			unset($point);
