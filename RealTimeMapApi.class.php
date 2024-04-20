@@ -1,40 +1,40 @@
 <?php
 
-/** Copyright Redline13, LLC */
+/** Copyright FastZip, LLC */
 
-/** Reline13 Map API */
-class Redline13MapApi
+/** Real Time Map API */
+class RealTimeMapApi
 {
 	/** Map ID */
 	private $mapId = null;
-	
+
 	/** Map key */
 	private $mapKey = null;
-	
+
 	/** Local server UNIX socket */
 	private $serverUnixSocket = null;
-	
+
 	/** CURL Handle */
 	private $curl = null;
-	
+
 	/** HTTP Protocol */
 	private $protocol = 'https';
-	
+
 	/** API Host */
 	const API_HOST = 'realtimemapapi.com';
-	
+
 	/** API Port */
 	const API_PORT = 4434;
-	
+
 	/** Connect timeout */
 	private $connectTimeout = 5;
-	
+
 	/** Request Timeout */
 	private $timeout = 20;
-	
+
 	/** Last response */
 	private $lastResponse = null;
-	
+
 	/**
 	 * Constructor
 	 *
@@ -46,7 +46,7 @@ class Redline13MapApi
 	{
 		$this->mapId = $mapId;
 		$this->mapKey = $mapKey;
-		
+
 		// Check if UIX socket exists
 		if ($serverUnixSocketFilename !== null && file_exists($serverUnixSocketFilename))
 		{
@@ -54,7 +54,7 @@ class Redline13MapApi
 			if ($this->serverUnixSocket === false)
 				$this->serverUnixSocket = null;
 		}
-		
+
 		// Did we open te socket? No?
 		if ($this->serverUnixSocket === null)
 		{
@@ -76,7 +76,7 @@ class Redline13MapApi
 	  if ($this->curl)
 	  	curl_close($this->curl);
 	}
-	
+
 	/**
 	 * Set timeouts
 	 *
@@ -88,7 +88,7 @@ class Redline13MapApi
 		$this->connectTimeout = $connectTimeout;
 		$this->timeout = $requestTimeout;
 	}
-	
+
 	/**
 	 * Get last response
 	 *
@@ -97,7 +97,7 @@ class Redline13MapApi
 	public function getLastResponse() {
 		return $this->lastResponse;
 	}
-	
+
 	/**
 	 * Send points
 	 *
@@ -108,7 +108,7 @@ class Redline13MapApi
 	public function sendPoints($points)
 	{
 		$rtn = false;
-		
+
 		// Send via UNIX socket
 		if ($this->serverUnixSocket !== null)
 		{
@@ -119,14 +119,14 @@ class Redline13MapApi
 			{
 				// Write
 				fwrite($this->serverUnixSocket, json_encode($point));
-				
+
 				// Check for response
 				if (feof($this->serverUnixSocket) || fgets($this->serverUnixSocket, 1024) !== "OK\n")
 					$rtn = false;
 			}
 			unset($point);
 		}
-		// Send to Redline
+		// Send to API
 		else
 		{
 			// Build POST data
@@ -138,7 +138,7 @@ class Redline13MapApi
 			$resp = $this->doHttpPost($postData);
 			if ($resp === null)
 				return false;
-			
+
 			// Remove headers
 			$pos = strpos($resp, "\r\n\r\n");
 			if ($pos === false)
@@ -149,14 +149,14 @@ class Redline13MapApi
 			if ($json === null)
 				return false;
 			$this->lastResponse = $json;
-			
+
 			// Return whether or not the response was valid
 			$rtn = ($json === true);
 		}
-		
+
 		return $rtn;
 	}
-	
+
 	/**
 	 * Do HTTP POST
 	 *
@@ -170,7 +170,7 @@ class Redline13MapApi
 		$url = $this->protocol . '://' . self::API_HOST;
 		if (self::API_PORT !== 80)
 			$url .= ':' . self::API_PORT;
-		
+
 		// Try to get url with curl
 	  $resp = null;
 	  if ($this->curl)
@@ -179,18 +179,18 @@ class Redline13MapApi
 			curl_setopt($this->curl, CURLOPT_URL, $url);
 			curl_setopt($this->curl, CURLOPT_HEADER, 1);
 			curl_setopt($this->curl, CURLOPT_RETURNTRANSFER, 1);
-			
+
 			// Timeouts
 			curl_setopt($this->curl, CURLOPT_CONNECTTIMEOUT, $this->connectTimeout);
 			curl_setopt($this->curl, CURLOPT_TIMEOUT, $this->timeout);
-			
+
 			curl_setopt($this->curl, CURLOPT_POST, 1);
 			curl_setopt($this->curl, CURLOPT_POSTFIELDS, $postData);
 			curl_setopt($this->curl, CURLOPT_HTTPHEADER, array(
 				'Content-Type: application/json',
 				'Content-Length: ' . strlen($postData)
 			));
-			
+
 			// Make request
 			if (($resp = curl_exec($this->curl)) === false)
 				$resp = null;
@@ -203,14 +203,14 @@ class Redline13MapApi
 				$this->protocol => array()
 			);
 	  	$wrapper = &$opts[$this->protocol];
-			
+
 			$wrapper['method'] = 'POST';
 			$wrapper['header'] = 'Content-Type: application/json' . "\r\n" . 'Content-Length: ' . strlen($postData);
 			$wrapper['content'] = $postData;
-			
+
 	  	// Create stream
 	  	$ctx = stream_context_create($opts);
-			
+
 			// Make request
 			if (($resp = file_get_contents($url, 0, $ctx)) === false)
 				$resp = null;
@@ -220,7 +220,7 @@ class Redline13MapApi
 				$resp = implode("\r\n", $http_response_header) . "\r\n\r\n" . $resp;
 			}
 	  }
-		
+
 		$this->lastResponse = $resp;
 		return $resp;
 	}

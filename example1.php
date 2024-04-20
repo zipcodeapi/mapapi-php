@@ -1,9 +1,9 @@
 <?php
 
-require_once('Redline13MapApi.class.php');
+require_once('RealTimeMapApi.class.php');
 
-$mapapi1 = new Redline13MapApi('btJHjMJb', 'LGzCW2LS8SDVn3d6', '/tmp/redline13_mapapi_server_socket');
-$mapapi2 = new Redline13MapApi('YSc55rfn', 'k7vl2nHvCFfN40YT');
+$mapapi1 = new RealTimeMapApi('btJHjMJb', 'LGzCW2LS8SDVn3d6', '/tmp/realtimemapapi_server_socket');
+$mapapi2 = new RealTimeMapApi('YSc55rfn', 'k7vl2nHvCFfN40YT');
 
 $endTime = time() + 10;
 while (time() <= $endTime)
@@ -14,12 +14,12 @@ while (time() <= $endTime)
 		array('lat' => 35.9 + (3-3*rand(0,1000000)/1000000), 'lng' => -85.7 + (3-3*rand(0,1000000)/1000000), 'r' => 10),
 		array('zipcode'=>'90210')
 	));
-	
+
 	$mapapi2->sendPoints(array(
 		array('lat' => 31 + (3-3*rand(0,1000000)/1000000), 'lng' => -90 + (3-3*rand(0,1000000)/1000000)),
 		array('lat' => 35 + (3-3*rand(0,1000000)/1000000), 'lng' => -80 + (3-3*rand(0,1000000)/1000000)),
 		array('lat' => 38 + (3-3*rand(0,1000000)/1000000), 'lng' => -95 + (3-3*rand(0,1000000)/1000000))
 	));
-	
+
 	usleep(250000);
 }
